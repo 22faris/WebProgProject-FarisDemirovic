@@ -1,0 +1,124 @@
+ <section id="dashboard" class="page-section">
+                    <div class="welcome-row">
+                        <div>
+                            <h2>Welcome back!</h2>
+                            <p>Here's what's happening with your money.</p>
+                        </div>
+                        <button class="primary-button" data-page="transactions">
+                            + View transactions
+                        </button>
+                    </div>
+
+                    <div class="summary-grid">
+                        <article class="summary-card">
+                            <p>Total balance</p>
+                            <h2 id="balance">2,450.00 KM</h2>
+                            <span class="card-note">Across your accounts</span>
+                            <div class="summary-icon purple">$</div>
+                        </article>
+
+                        <article class="summary-card">
+                            <p>Total income</p>
+                            <h2 id="income">3,200.00 KM</h2>
+                            <span class="card-note">This month</span>
+                            <div class="summary-icon green">↗</div>
+                        </article>
+
+                        <article class="summary-card">
+                            <p>Total expenses</p>
+                            <h2 id="expenses">750.00 KM</h2>
+                            <span class="card-note">This month</span>
+                            <div class="summary-icon orange">↘</div>
+                        </article>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <article class="panel spending-panel">
+                            <div class="panel-heading">
+                                <div>
+                                    <h3>Spending overview</h3>
+                                    <p>Your expenses by category</p>
+                                </div>
+                                <span class="period-label">This month</span>
+                            </div>
+
+                            <div class="chart-placeholder">
+                                <div class="chart-row">
+                                    <span>Food</span>
+                                    <div class="bar-track">
+                                        <div class="bar" style="width: 75%"></div>
+                                    </div>
+                                    <strong>300 KM</strong>
+                                </div>
+                                <div class="chart-row">
+                                    <span>Transport</span>
+                                    <div class="bar-track">
+                                        <div class="bar bar-blue" style="width: 45%"></div>
+                                    </div>
+                                    <strong>180 KM</strong>
+                                </div>
+                                <div class="chart-row">
+                                    <span>Shopping</span>
+                                    <div class="bar-track">
+                                        <div class="bar bar-orange" style="width: 35%"></div>
+                                    </div>
+                                    <strong>140 KM</strong>
+                                </div>
+                                <div class="chart-row">
+                                    <span>Bills</span>
+                                    <div class="bar-track">
+                                        <div class="bar bar-green" style="width: 32.5%"></div>
+                                    </div>
+                                    <strong>130 KM</strong>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-heading">
+                                <div>
+                                    <h3>Monthly budget</h3>
+                                    <p>Your spending limit</p>
+                                </div>
+                            </div>
+
+                            <div class="budget-total">
+                                <strong>750 KM</strong>
+                                <span>of 1,200 KM</span>
+                            </div>
+                            <div class="budget-track">
+                                <div class="budget-progress"></div>
+                            </div>
+                            <p class="budget-message">450 KM remaining this month</p>
+                            <button class="secondary-button" data-page="budgets">
+                                Manage budgets
+                            </button>
+                        </article>
+                    </div>
+
+                    <article class="panel transactions-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h3>Recent transactions</h3>
+                                <p>Your latest financial activity</p>
+                            </div>
+                            <button class="text-button" data-page="transactions">
+                                View all →
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>TRANSACTION</th>
+                                        <th>DATE</th>
+                                        <th>CATEGORY</th>
+                                        <th>AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-transactions"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>

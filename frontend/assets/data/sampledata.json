@@ -1,0 +1,37 @@
+ [
+    {
+       "name": "Monthly salary",
+        "date": "2026-10-01",
+        "category": "Salary",
+        "amount": 3200,
+        "type": "income"
+    },
+    {
+        "name": "Groceries",
+        "date": "2026-10-05",
+        "category": "Food",
+        "amount": 300,
+        "type": "expense"
+    },
+    {
+        "name": "Bus and taxi",
+        "date": "2026-10-08",
+        "category": "Transport",
+        "amount": 180,
+        "type": "expense"
+    },
+    {
+        "name": "New clothes",
+        "date": "2026-10-12",
+        "category": "Shopping",
+        "amount": 140,
+        "type": "expense"
+    },
+    {
+        "name": "Electricity bill",
+        "date": "2026-10-15",
+        "category": "Bills",
+        "amount": 130,
+        "type": "expense"
+    }
+]

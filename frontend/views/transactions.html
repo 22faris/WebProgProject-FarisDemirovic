@@ -1,0 +1,66 @@
+<!-- TRANSACTIONS -->
+<section id="transactions" class="page-section hidden">
+    <div class="section-intro">
+        <h2>Transactions</h2>
+        <p>Review your income and expenses.</p>
+    </div>
+
+    <article class="panel">
+        <h3>Add a transaction</h3>
+
+        <form id="transaction-form" class="transaction-form">
+            <div>
+                <label for="transaction-name">Description</label>
+                <input id="transaction-name" class="form-control"
+                    type="text" placeholder="e.g. Groceries" required>
+            </div>
+            <div>
+                <label for="transaction-amount">Amount (KM)</label>
+                <input id="transaction-amount" class="form-control"
+                    type="number" min="0.01" step="0.01"
+                    placeholder="0.00" required>
+            </div>
+            <div>
+                <label for="transaction-type">Type</label>
+                <select id="transaction-type" class="form-select">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                </select>
+            </div>
+            <div>
+                <label for="transaction-category">Category</label>
+                <select id="transaction-category" class="form-select">
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Shopping</option>
+                    <option>Bills</option>
+                    <option>Salary</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <button type="submit" class="primary-button">
+                Add transaction
+            </button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>All transactions</h3>
+            <span class="period-label">Sample data</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table transaction-table">
+                <thead>
+                    <tr>
+                        <th>TRANSACTION</th>
+                        <th>DATE</th>
+                        <th>CATEGORY</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                </thead>
+                <tbody id="all-transactions"></tbody>
+            </table>
+        </div>
+    </article>
+</section>
