@@ -1,3 +1,4 @@
+let transactions = [];
 
 const formatMoney = amount =>
     `${amount.toLocaleString("en-GB", {
@@ -19,7 +20,7 @@ async function showPage(pageId) {
         pageId = "dashboard";
     }
 
-const viewContainer = document.getElementById("viewContainer");
+    const viewContainer = document.getElementById("view-container");
 
     const titles = {
         dashboard: "Dashboard",
@@ -28,17 +29,24 @@ const viewContainer = document.getElementById("viewContainer");
         reports: "Reports",
         profile: "Profile & Settings"
     };
+
     try {
         const response = await fetch(`views/${pageId}.html`);
 
         if (!response.ok) {
             throw new Error(
-                 `Failed to load views/${pageId}.html. HTTP status: ${response.status}`
+                `Failed to load views/${pageId}.html. Status: ${response.status}`
             );
         }
 
         const html = await response.text();
         viewContainer.innerHTML = html;
+
+        // Each view is fetched by itself, so it must not keep the hidden
+        // class used when views were originally shown together on one page.
+        viewContainer.querySelectorAll(".page-section").forEach(section => {
+            section.classList.remove("hidden");
+        });
 
         document.getElementById("page-title").textContent =
             titles[pageId];
@@ -52,24 +60,24 @@ const viewContainer = document.getElementById("viewContainer");
 
         history.replaceState(null, "", `#${pageId}`);
 
-        // Initialize the JavaScript for the loaded view.
         initializePage(pageId);
 
         window.scrollTo({ top: 0, behavior: "smooth" });
 
     } catch (error) {
-        console.error("View loading error: ",error);
+        console.error("View loading error:", error);
         viewContainer.innerHTML =
             "<p>Unable to load this page. Check the view file path.</p>";
     }
 }
-   
 
-document.querySelectorAll("[data-page]").forEach(link => {
-    link.addEventListener("click", event => {
+document.addEventListener("click", event => {
+    const link = event.target.closest("[data-page]");
+
+    if (link) {
         event.preventDefault();
         showPage(link.dataset.page);
-    });
+    }
 });
 
 
@@ -238,11 +246,23 @@ window.addEventListener("hashchange", () => {
     showPage(pageId);
 });
 
+async function startApp() {
+    try {
+        const response = await fetch("assets/data/sampledata.json");
 
-window.addEventListener("hashchange", () => {
-    const pageId = location.hash.slice(1) || "dashboard";
-    showPage(pageId);
-});
+        if (!response.ok) {
+            throw new Error("Could not load sampledata.json");
+        }
 
-const initialPage = location.hash.slice(1) || "dashboard";
-showPage(initialPage);
+        transactions = await response.json();
+
+    } catch (error) {
+        console.error("Error loading transaction data:", error);
+        transactions = [];
+    }
+
+    const initialPage = location.hash.slice(1) || "dashboard";
+    await showPage(initialPage);
+}
+
+startApp();
