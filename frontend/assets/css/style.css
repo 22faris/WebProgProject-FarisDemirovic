@@ -526,6 +526,32 @@ button, input, select {
     max-width: 560px;
 }
 
+.auth-panel {
+    max-width: 560px;
+}
+
+.auth-panel form {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.auth-panel label {
+    display: block;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+
+.auth-switch {
+    margin: 18px 0 0;
+    color: var(--muted);
+}
+
+.auth-switch a {
+    color: var(--primary);
+    font-weight: 650;
+}
+
 .large-avatar {
     width: 66px;
     height: 66px;

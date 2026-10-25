@@ -13,7 +13,9 @@ async function showPage(pageId) {
         "transactions",
         "budgets",
         "reports",
-        "profile"
+        "profile",
+        "login",
+        "register"
     ];
 
     if (!validPages.includes(pageId)) {
@@ -27,7 +29,9 @@ async function showPage(pageId) {
         transactions: "Transactions",
         budgets: "Budgets",
         reports: "Reports",
-        profile: "Profile & Settings"
+        profile: "Profile & Settings",
+        login: "Login",
+        register: "Register"
     };
 
     try {
@@ -214,6 +218,30 @@ function saveProfile() {
         "Demo preferences updated. They will reset when you refresh.";
 }
 
+function handleLoginSubmit(event) {
+    event.preventDefault();
+    document.getElementById("auth-message").textContent =
+        "Login is a demo form. Authentication is not connected yet.";
+}
+
+function handleRegisterSubmit(event) {
+    event.preventDefault();
+
+    const password = document.getElementById("register-password");
+    const confirmPassword = document.getElementById("confirm-password");
+    const message = document.getElementById("auth-message");
+
+    if (password.value !== confirmPassword.value) {
+        confirmPassword.setCustomValidity("Passwords must match.");
+        confirmPassword.reportValidity();
+        return;
+    }
+
+    confirmPassword.setCustomValidity("");
+    message.textContent =
+        "Registration is a demo form. Account creation is not connected yet.";
+}
+
 
 function initializePage(pageId) {
     if (pageId === "dashboard") {
@@ -236,6 +264,29 @@ function initializePage(pageId) {
 
         if (saveButton) {
             saveButton.addEventListener("click", saveProfile);
+        }
+    }
+
+    if (pageId === "login") {
+        const form = document.getElementById("login-form");
+
+        if (form) {
+            form.addEventListener("submit", handleLoginSubmit);
+        }
+    }
+
+    if (pageId === "register") {
+        const form = document.getElementById("register-form");
+        const confirmPassword = document.getElementById("confirm-password");
+
+        if (form) {
+            form.addEventListener("submit", handleRegisterSubmit);
+        }
+
+        if (confirmPassword) {
+            confirmPassword.addEventListener("input", () => {
+                confirmPassword.setCustomValidity("");
+            });
         }
     }
 }
