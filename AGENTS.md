@@ -7,7 +7,7 @@ SpendWise is a university Web Programming project for tracking personal income, 
 ## Technology and implementation status
 
 - Implemented: HTML, CSS, JavaScript, Bootstrap 5.3.3 loaded from jsDelivr, and JSON sample transaction data.
-- Planned backend: PHP with FlightPHP, MySQL, and PDO. No PHP routes, database access, authentication service, or persistence are implemented yet.
+- Implemented for Milestone 2: MySQL schema/sample data and PDO DAO classes for users, user settings, categories, transactions, and budgets. No PHP routes, authentication service, or frontend persistence are implemented.
 
 ## Project structure
 
@@ -16,7 +16,12 @@ SpendWise is a university Web Programming project for tracking personal income, 
 - `frontend/assets/js/app.js`: view loader, hash handling, sample data, and page initialization.
 - `frontend/assets/data/sampledata.json`: demo transactions fetched at startup.
 - `frontend/views/`: one HTML fragment per page: dashboard, transactions, budgets, reports, profile, login, and register.
-- `backend/config/`, `backend/dao/`, `backend/logs/`, `backend/middleware/`, `backend/routes/`, and `backend/services/`: reserved directories for future backend work. They currently contain only placeholders.
+- `backend/config/config.example.php`: safe database configuration template; copy to the ignored `config.php` and enter local credentials.
+- `backend/database/schema.sql`: complete MySQL schema and demonstration rows.
+- `backend/database/ERD.md`: Mermaid relationship diagram for the current five-entity schema.
+- `backend/dao/`: reusable `BaseDAO` and entity-specific PDO CRUD classes.
+- `backend/tests/dao_crud_test.php`: isolated CRUD demonstration that rolls back its data.
+- `backend/logs/`, `backend/middleware/`, `backend/routes/`, and `backend/services/`: reserved for later backend work.
 - `database-diagram.png`: planned database design artifact.
 - `README.md`: project overview and planned improvements.
 - `docs/AI_LOG.md`: milestone-by-milestone record of AI assistance, when maintained.
@@ -52,3 +57,11 @@ Never commit secrets, database credentials, JWT secrets, API keys, real password
 - Make the smallest changes that satisfy the request and explain the files changed and why.
 - Do not claim code works unless it was tested; describe untested behavior and limitations honestly.
 - Do not commit, push, merge, or publish changes unless the user explicitly asks.
+
+## Milestone 2 database conventions
+
+- Use MySQL 8.0+ with InnoDB, `utf8mb4`, PDO exception mode, native prepared statements, and explicit column allow-lists for dynamic DAO identifiers.
+- `BaseDAO` owns prepared CRUD statements. Entity DAOs define their table and writable fields. A missing `findById()` returns `null`; an update/delete for a missing row returns `false`; PDO failures are raised as exceptions for the caller to handle.
+- `user_settings` is one-to-one with users. Categories are unique per user by name/type. Transactions and budgets use composite foreign keys so their category must belong to the same user. Deletes cascade from a user to that user's data.
+- `php backend/tests/dao_crud_test.php` creates temporary records inside a transaction and rolls them back. Configure a disposable test database before running it; do not point it at important data.
+- The SQL schema uses `CREATE DATABASE`/`USE`; inspect and select the intended database before import. Re-import drops and rebuilds the five schema tables.
