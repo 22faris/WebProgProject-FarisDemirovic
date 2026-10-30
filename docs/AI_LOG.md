@@ -19,3 +19,19 @@
 3. A later PowerShell search command used double quotes around patterns containing escaped double quotes. PowerShell interpreted the inner quotes as syntax and attempted to run words from the pattern as commands. The search did not run; the command needs PowerShell single-quoted patterns (or a here-string) and was not needed for the implementation.
 
 These examples document command/tool output mistakes, not application defects. No authentication implementation or backend behavior was generated for this milestone.
+
+## Milestone 2 database and DAO foundation — 2026-10-28
+
+### Tools and contributions
+
+- OpenAI Codex inspected `AGENTS.md`, `README.md`, the frontend's transaction/profile examples, the existing ERD, Git status/history, and backend placeholder directories before editing.
+- Codex implemented a MySQL schema and ERD, PDO DAO classes, a local configuration template, a CRUD demonstration script, and documentation updates in response to the user's Milestone 2 request.
+- PHP 8.2.12 lint passed for every backend PHP file. The CLI has `pdo_mysql`; the available MySQL client identifies as MariaDB 10.4.32. No MySQL/MariaDB server process is running and the ignored local `backend/config/config.php` is absent. The CRUD demonstration was attempted and stopped at the missing-config check, before any database operation. CRUD and SQL import are therefore unverified and still require a configured running server.
+
+### Important prompt
+
+- The user requested implementing Milestone 2 database and DAO requirements, preserving Milestone 1, updating project instructions and documentation, demonstrating CRUD for each entity, running possible checks, and preparing a `milestone-2` branch without merging.
+
+### AI mistakes and corrections
+
+- An initial attempt to create the branch was denied because the repository's `.git` metadata is read-only in the default sandbox. The command was retried with an explicit escalation request, approved, and `milestone-2` was created from the inspected `milestone-1` branch. No project files had been edited at that point.
