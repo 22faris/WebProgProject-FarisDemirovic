@@ -242,8 +242,32 @@ function handleRegisterSubmit(event) {
         "Registration is a demo form. Account creation is not connected yet.";
 }
 
+async function handleCurrencyConvert(event) {
+    event.preventDefault();
+    const output = document.getElementById("currency-convert-message");
+    const amount = Number(document.getElementById("convert-amount").value);
+    const from = document.getElementById("convert-from").value;
+    const to = document.getElementById("convert-to").value;
+    output.textContent = "Getting the latest reference rate…";
+    try {
+        const params = new URLSearchParams({ amount: String(amount), from, to });
+        const response = await fetch(`../backend/public/api/exchange/convert?${params}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error?.message || "Conversion is unavailable.");
+        const conversion = result.data;
+        output.textContent = `${conversion.amount.toLocaleString()} ${conversion.from} = ${conversion.converted_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${conversion.to} (rate date ${conversion.date}).`;
+    } catch (error) {
+        output.textContent = error.message || "Exchange rates are temporarily unavailable.";
+    }
+}
+
 
 function initializePage(pageId) {
+    if (pageId === "reports") {
+        const form = document.getElementById("currency-convert-form");
+        if (form) form.addEventListener("submit", handleCurrencyConvert);
+    }
+
     if (pageId === "dashboard") {
         renderTransactions();
         updateDashboard();

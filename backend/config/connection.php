@@ -15,7 +15,7 @@ function spendwisePdo(): PDO
 
     $config = require $configPath;
     foreach (['dsn', 'username', 'password'] as $key) {
-        if (!isset($config[$key]) || !is_string($config[$key]) || $config[$key] === '') {
+        if (!array_key_exists($key, $config) || !is_string($config[$key]) || ($key !== 'password' && $config[$key] === '')) {
             throw new RuntimeException("Database configuration must include a non-empty {$key}.");
         }
     }

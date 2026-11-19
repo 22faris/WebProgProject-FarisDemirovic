@@ -1,0 +1,8 @@
+{
+  "name": "spendwise/expense-tracker-api",
+  "description": "SpendWise Milestone 3 REST API",
+  "type": "project",
+  "license": "proprietary",
+  "require": {"php": ">=8.1", "flightphp/core": "^3.15"},
+  "config": {"optimize-autoloader": true, "sort-packages": true}
+}

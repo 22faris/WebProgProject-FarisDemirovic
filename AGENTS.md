@@ -1,67 +1,38 @@
 # SpendWise project guide
 
-## Purpose
+## Purpose and status
 
-SpendWise is a university Web Programming project for tracking personal income, expenses, budgets, and reports. The current application is a static frontend demo; account and financial data are not connected to a backend.
-
-## Technology and implementation status
-
-- Implemented: HTML, CSS, JavaScript, Bootstrap 5.3.3 loaded from jsDelivr, and JSON sample transaction data.
-- Implemented for Milestone 2: MySQL schema/sample data and PDO DAO classes for users, user settings, categories, transactions, and budgets. No PHP routes, authentication service, or frontend persistence are implemented.
+SpendWise tracks income, expenses, budgets, and reports. The frontend is a static HTML/CSS/JavaScript demo using sample JSON and is not connected to the backend for financial persistence. Milestone 2 provides a MySQL schema and PDO DAOs. Milestone 3 adds a FlightPHP JSON CRUD API, entity services, OpenAPI documentation/Swagger UI, and a Frankfurter-backed converter. Authentication, authorization, and user-scoped access are deferred to Milestone 4; do not claim the current open CRUD API is secure for public deployment.
 
 ## Project structure
 
-- `frontend/index.html`: SPA shell, sidebar navigation, page title, and `view-container`.
-- `frontend/assets/css/style.css`: application styles and responsive rules.
-- `frontend/assets/js/app.js`: view loader, hash handling, sample data, and page initialization.
-- `frontend/assets/data/sampledata.json`: demo transactions fetched at startup.
-- `frontend/views/`: one HTML fragment per page: dashboard, transactions, budgets, reports, profile, login, and register.
-- `backend/config/config.example.php`: safe database configuration template; copy to the ignored `config.php` and enter local credentials.
-- `backend/database/schema.sql`: complete MySQL schema and demonstration rows.
-- `backend/database/ERD.md`: Mermaid relationship diagram for the current five-entity schema.
-- `backend/dao/`: reusable `BaseDAO` and entity-specific PDO CRUD classes.
-- `backend/tests/dao_crud_test.php`: isolated CRUD demonstration that rolls back its data.
-- `backend/logs/`, `backend/middleware/`, `backend/routes/`, and `backend/services/`: reserved for later backend work.
-- `database-diagram.png`: planned database design artifact.
-- `README.md`: project overview and planned improvements.
-- `docs/AI_LOG.md`: milestone-by-milestone record of AI assistance, when maintained.
+- `frontend/index.html`, `frontend/views/`, `frontend/assets/css/`, `frontend/assets/js/`: existing SPA. `frontend/assets/data/sampledata.json` is demo data.
+- `backend/composer.json` and `backend/composer.lock`: one Composer project and locked FlightPHP dependency. Install with `cd backend; composer install`. Do not commit `backend/vendor/`.
+- `backend/public/index.php`: FlightPHP front controller and request/response helpers; `backend/public/.htaccess` rewrites API paths.
+- `backend/routes/api.php`: HTTP routes only. Routes parse/validate transport structure and return JSON; they must not contain SQL or call DAO methods.
+- `backend/services/`: business logic and input validation. Every SQL-backed entity has a service corresponding to its DAO. `ServiceFactory` wires each service to its DAO. Services are the only application layer that calls DAOs. Do not put SQL in routes or services.
+- `backend/services/ExchangeRateService.php`: external Frankfurter adapter; no key is needed. Use its current documented v2 rate format and a bounded timeout.
+- `backend/dao/`: PDO prepared CRUD; `BaseDAO` owns generic SQL and entity DAOs set table/column allow-lists. Keep schema identifiers in this layer.
+- `backend/config/config.example.php`: safe MySQL template; copy to ignored `config.php` for local credentials. Never put secrets in frontend or tracked config.
+- `backend/database/schema.sql`: existing five-table schema; it drops and recreates tables when imported. Inspect before running.
+- `backend/openapi.yaml`, `backend/docs/index.html`: API contract and Swagger UI. Keep documented paths, methods, schemas, errors, and examples synchronized with routes.
+- `backend/tests/dao_crud_test.php`: rollback-only DAO exercise; use a disposable database.
+- `docs/AI_LOG.md`: milestone-by-milestone record, including genuine generated errors or clearly marked review placeholders.
+
+## Database and DAO conventions
+
+The schema entities are `users`, `user_settings`, `categories`, `transactions`, and `budgets`. User settings are one-to-one with users and use `user_id` as their primary key and API resource identifier. Transaction and budget category references must belong to the same user. Preserve these relationships and existing sample data. MySQL uses InnoDB, utf8mb4, PDO exception mode, native prepared statements, and allow-listed dynamic DAO identifiers. Missing lookups return `null`; missing update/delete operations return `false`; database exceptions are handled at the API boundary.
+
+Services validate required fields, types, limits, enum values, positive IDs, dates/month boundaries, and reference relationships. On user writes, hash the submitted password into the existing `password_hash` column; never return or log it. Map invalid input to JSON 400, missing records to 404, constraint conflicts to 400, external provider outages to a friendly 503, and unexpected errors to a generic 500. Never include SQL, stack traces, credentials, or internal paths in responses. Do not implement pretend authentication.
 
 ## Frontend conventions
 
-- Serve the `frontend/` directory through a web server. `index.html` loads `assets/css/style.css` and `assets/js/app.js`; the loader fetches `views/<page-id>.html` and startup fetches `assets/data/sampledata.json`, relative to the frontend root.
-- Navigation controls use matching `href="#<page-id>"` and `data-page="<page-id>"` values. `showPage()` validates page IDs, loads the matching view, updates `#page-title` and the active `.nav-link`, and updates the URL hash. The click handler is delegated so controls inside fetched views work. One `hashchange` listener supports direct hash changes.
-- Keep the shell IDs `view-container` and `page-title` in sync with JavaScript references. View filenames and page IDs are lowercase and match exactly.
-- Put view-specific setup in `initializePage(pageId)`. Check that elements exist before attaching handlers because only one view is mounted at a time. Shared transaction rendering and dashboard updates must tolerate missing target elements.
-- Views are HTML fragments inserted into the shell, not standalone documents. Use existing `page-section`, `panel`, `form-control`, and button styles where appropriate. The loader removes `.hidden` from the inserted page section.
-- Login and registration are presentation and client-side validation demos only. Do not imply that credentials are sent, stored, or authenticated.
+Serve `frontend/` through Apache. Keep existing SPA shell IDs (`view-container`, `page-title`), view filenames/page IDs, loader behavior, and working sample-data/forms intact unless a task requires a change. Fetched views are fragments. Put view behavior in `initializePage(pageId)` and check elements exist. The Reports currency converter may call the backend API, but other existing demo behavior remains sample-only. Login and registration screens must not claim authentication or account persistence.
 
-## Frontend and backend separation
+## Security and Git
 
-Keep browser UI and client-side behavior under `frontend/`. When backend work is authorized, keep routing, business services, data access, middleware, configuration, and logs in their corresponding `backend/` areas. Never put secrets or database credentials in frontend files.
+Never commit database credentials, API keys, real passwords, or private financial data. Keep `config.php`, logs, and `vendor/` ignored. Authentication and ownership authorization are future work; do not expose this unauthenticated API to the public internet. Preserve uncommitted user changes. Do not reset, overwrite, commit, push, merge, publish, or create a PR unless explicitly asked. Milestone 3 work belongs on `milestone3`; inspect branch/status before editing.
 
-## Security
+## Documentation and verification
 
-Never commit secrets, database credentials, JWT secrets, API keys, real passwords, or private user data. Use ignored local environment files for development secrets and sanitized examples for configuration templates. Do not log submitted passwords.
-
-## Coding guidelines
-
-- Preserve existing pages, styling, navigation, sample-data behavior, and handlers unless a requested change requires otherwise.
-- Use lowercase page IDs, matching view filenames, and descriptive DOM IDs. Avoid unnecessary dependencies and frameworks.
-- Validate user input in the browser for usability, and validate it again on the server once backend endpoints exist.
-- Check JavaScript syntax, fetch paths, direct hash loads, navigation, and affected forms after changes. State which checks were actually run.
-
-## Instructions for AI coding assistants
-
-- Inspect relevant files, Git status, and project conventions before editing.
-- Preserve unrelated user work. Do not reset, overwrite, or discard changes without explicit instruction.
-- Make the smallest changes that satisfy the request and explain the files changed and why.
-- Do not claim code works unless it was tested; describe untested behavior and limitations honestly.
-- Do not commit, push, merge, or publish changes unless the user explicitly asks.
-
-## Milestone 2 database conventions
-
-- Use MySQL 8.0+ with InnoDB, `utf8mb4`, PDO exception mode, native prepared statements, and explicit column allow-lists for dynamic DAO identifiers.
-- `BaseDAO` owns prepared CRUD statements. Entity DAOs define their table and writable fields. A missing `findById()` returns `null`; an update/delete for a missing row returns `false`; PDO failures are raised as exceptions for the caller to handle.
-- `user_settings` is one-to-one with users. Categories are unique per user by name/type. Transactions and budgets use composite foreign keys so their category must belong to the same user. Deletes cascade from a user to that user's data.
-- `php backend/tests/dao_crud_test.php` creates temporary records inside a transaction and rolls them back. Configure a disposable test database before running it; do not point it at important data.
-- The SQL schema uses `CREATE DATABASE`/`USE`; inspect and select the intended database before import. Re-import drops and rebuilds the five schema tables.
+README setup commands must match XAMPP paths and actual configuration. OpenAPI must match the running API. Report exactly which checks ran and which require a configured database or browser. Do not claim database/API integration passed without testing against a real database. Never import the destructive schema into valuable data or run CRUD verification against an important database.
