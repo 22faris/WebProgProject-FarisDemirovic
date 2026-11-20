@@ -35,3 +35,25 @@ These examples document command/tool output mistakes, not application defects. N
 ### AI mistakes and corrections
 
 - An initial attempt to create the branch was denied because the repository's `.git` metadata is read-only in the default sandbox. The command was retried with an explicit escalation request, approved, and `milestone-2` was created from the inspected `milestone-1` branch. No project files had been edited at that point.
+## Milestone 3 business logic and API — 2026-11-19
+
+### AI tools and contributions
+
+- OpenAI Codex (GPT-6) inspected the real repository tree, schema, DAOs, config, Composer availability, frontend, and Git branch/status; switched to `milestone3`; then authored the FlightPHP API, services, OpenAPI/Swagger page, currency conversion service, frontend Reports converter, and project documentation.
+- Shell tools (`git`, PowerShell, Composer, PHP, Node) were used for inspection and verification. The current Frankfurter v2 endpoint and response format were checked against its official documentation.
+
+### Important prompt
+
+- The supplied Milestone 3 implementation request required preserving the five existing entities/DAOs, implementing validated services and FlightPHP CRUD routes, documenting only implemented endpoints, adding Frankfurter conversion, and updating AGENTS.md, README.md, and this log.
+
+### AI mistakes and corrections
+
+1. An early service-layer draft included raw SQL for checking related user/category records, which violated the project's DAO boundary. This was caught during review before API validation; the checks were changed to use `UserDAO`/`CategoryDAO` `findById()` methods through the service layer. No route or service now contains SQL statements.
+2. The first route draft evaluated `serviceFor()` before parsing a request body, so a malformed JSON POST tried to connect to MySQL before it could return 400. An actual HTTP check showed the incorrect 500; body/ID validation was reordered ahead of service creation. That check also exposed that the pre-existing connection guard rejected an empty MySQL password even though the ignored local XAMPP config uses one; it now allows an empty password but still requires a DSN and username.
+
+### Verification status
+
+- Composer resolved and installed `flightphp/core` v3.19.5 and wrote `backend/composer.lock`. XAMPP's PHP ZIP extension had to be enabled for the install command; the extension exists locally but is disabled in the default CLI configuration.
+- All backend PHP files linted successfully; JavaScript syntax and Composer manifest validation passed. HTTP checks confirmed malformed JSON and invalid IDs return 400, an unknown route returns JSON 404, invalid currency returns 400, and live EUR-to-BAM conversion returned 200. With sandbox egress blocked the same rate endpoint returned its friendly 503 response.
+- The added `backend/tests/service_validation_test.php` passed all seven no-MySQL service validation cases. After the user started XAMPP MySQL, PDO connected to `spendwise`; read-only counts matched the expected sample rows (1 user, 1 setting, 5 categories, 5 transactions, 4 budgets). Collection and sample-item GETs returned 200 JSON for all entities through Flight, and all five collection GETs plus the converter returned 200 through XAMPP Apache. The Swagger HTML and OpenAPI YAML also returned HTTP 200. No database rows were changed.
+- Swagger UI was not visually rendered because the computer-use browser host was unavailable. Composer install completed with no dependency changes; it emitted a non-blocking warning that Packagist metadata could not be fetched, but all locked packages were already installed.

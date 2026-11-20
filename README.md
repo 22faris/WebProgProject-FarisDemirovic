@@ -1,74 +1,68 @@
-# Web Programming project
-My project for the IT 2001 Web Programming course.
+# SpendWise | Expense Tracker
 
-# SpendWise – Personal Expense Tracker
+SpendWise is a university Web Programming project. Its browser interface remains a static demo with sample transaction data; Milestone 3 adds an independent FlightPHP REST API for the existing MySQL database and a live currency conversion feature.
 
-## About the Project
+## Architecture
 
-SpendWise is a personal finance web application designed to help users manage their money, track their income and expenses, and monitor their spending habits. The project provides a simple and user-friendly interface for organizing financial transactions and keeping track of monthly budgets.
+```text
+frontend/ (HTML/CSS/JS SPA and sample JSON)
+backend/public/index.php (FlightPHP front controller)
+  -> backend/routes/api.php -> backend/services/ServiceFactory.php
+  -> entity services -> backend/dao/ -> MySQL
+backend/openapi.yaml + backend/docs/index.html (Swagger UI)
+```
 
-The application includes a dashboard that summarizes financial activity, a transactions page for viewing income and expenses, a budgets page for managing spending limits, a reports page for reviewing financial activity, and a profile page for user-related information.
+The five database entities are users, user_settings, categories, transactions, and budgets. The database schema and PDO DAOs from Milestone 2 remain in place. Services validate inputs, enforce entity relationships, and call DAOs; routes only parse HTTP input and serialize responses. CRUD endpoints are unauthenticated for this milestone; do not expose this demo API to the public internet. User passwords supplied to the user API are hashed, and `password_hash` is never returned.
 
-## Features
+## Requirements
 
-Dashboard: View an overview of income, expenses, balance, and recent financial activity.
+- XAMPP with Apache, MySQL, PHP 8.1+ and PDO MySQL enabled.
+- Composer 2. FlightPHP is installed from `backend/composer.json`.
+- Apache `mod_rewrite` and `.htaccess` overrides enabled for the API front controller.
 
-Transactions: View and organize income and expense records.
+Install backend dependencies once:
 
-Budgets: Monitor budgets and track spending against planned limits.
+```powershell
+cd backend
+composer install
+```
 
-Reports: Review financial activity and spending patterns.
+If Composer says ZIP is missing on XAMPP, enable `extension=zip` in the active `php.ini`, restart the terminal, and rerun `composer install`.
 
-Profile: View and manage profile-related information.
+## Local XAMPP setup
 
-## Technologies Used
+1. Put/keep the repository under `C:\xampp\htdocs\WebProgProject-FarisDemirovic`.
+2. Start Apache and MySQL in XAMPP Control Panel.
+3. Import `backend/database/schema.sql` using phpMyAdmin. **Importing this file drops and rebuilds the five tables**, so export valuable data first.
+4. Copy `backend/config/config.example.php` to `backend/config/config.php`. Set the local MySQL DSN, username, and password. The local file is ignored by Git.
+5. From repository root run `cd backend; composer install` if dependencies are not installed yet.
+6. Open the SPA at `http://localhost/WebProgProject-FarisDemirovic/frontend/`.
+7. Open API docs at `http://localhost/WebProgProject-FarisDemirovic/backend/docs/`.
 
-HTML5
+The Swagger UI page loads its CSS/JavaScript bundle from unpkg, so the visual documentation needs an internet connection. Currency conversion also requires outbound access from PHP to Frankfurter. The API itself is served by XAMPP Apache; `backend/public/.htaccess` forwards API paths to FlightPHP.
 
-CSS
+## API overview
 
-JavaScript
+All API responses are JSON. Lists and records use `{ "data": ... }`; errors use `{ "error": { "code": "...", "message": "..." } }`. Create returns 201, invalid requests 400, missing records 404, unexpected errors 500, and external-rate outages 503. Password hashes are omitted from all user responses.
 
-JSON for sample financial data
+For each resource below the implemented methods are `GET /api/{resource}`, `GET /api/{resource}/{id}`, `POST /api/{resource}`, `PUT /api/{resource}/{id}`, `PATCH /api/{resource}/{id}`, and `DELETE /api/{resource}/{id}`:
 
-## Project Goal
+- `/api/users` (user-settings uses `user_id` as its ID)
+- `/api/user-settings`
+- `/api/categories`
+- `/api/transactions`
+- `/api/budgets`
 
-The goal of SpendWise is to provide a convenient way to understand personal financial habits, organize transactions, and plan spending more effectively. The project also serves as an opportunity to apply web development concepts, including page structure, styling, JavaScript-based interactivity, and data management.
+Currency conversion: `GET /api/exchange/convert?from=EUR&to=BAM&amount=25`. Example response:
 
-## Future Improvements
+```json
+{"data":{"amount":25,"from":"EUR","to":"BAM","rate":1.95583,"converted_amount":48.9,"date":"2026-11-18"}}
+```
 
-Connect the application to a MySQL database.
+The backend fetches Frankfurter v2 reference rates (`/v2/rates?base=EUR&quotes=BAM`) with a short timeout and performs the multiplication itself. Frankfurter does not require an API key. The Reports page includes a browser converter that uses this backend endpoint; conversion failures do not affect the rest of the static demo.
 
-Implement user registration and authentication.
+## Testing and verification
 
-Add, edit, and delete transactions.
+Check PHP syntax with `Get-ChildItem backend -Recurse -Filter *.php | ForEach-Object { php -l $_.FullName }` and JavaScript with `node --check frontend/assets/js/app.js`. `php backend/tests/service_validation_test.php` checks service input validation without requiring MySQL. For database CRUD verification, configure a **disposable** `spendwise` database and run `php backend/tests/dao_crud_test.php`; it rolls back its fixture transaction. Do not run that test against important data. To try APIs, use Swagger UI or `curl.exe`; POST a user and category first, then create a transaction/budget referencing their IDs. No API mutations are run automatically by the project setup.
 
-Allow users to create and update budgets.
-
-Generate more detailed financial reports and visualizations.
-
-Improve data validation and error handling.
-
-## Milestone 2: MySQL schema and DAO layer
-
-Milestone 2 adds a MySQL 8.0+ schema in `backend/database/schema.sql` with five related entities: users, user settings, categories, transactions, and budgets. The SQL file creates the `spendwise` database, defines keys, constraints, and sample rows, and can be re-imported to rebuild the demo database. **Re-import drops and recreates these five tables**, so export any data you need first.
-
-The PHP PDO DAO layer is in `backend/dao/`. `BaseDAO` implements prepared create/read/update/delete operations with an allow-list for writable column names. Entity-specific classes cover all five tables. A missing ID lookup returns `null`, update/delete of a missing row returns `false`, invalid fields raise `InvalidArgumentException`, and PDO/database errors propagate as exceptions. This milestone does not add HTTP routes, login, or connect the static frontend to this database.
-
-### Database setup (XAMPP)
-
-1. Start MySQL in the XAMPP Control Panel.
-2. In phpMyAdmin or a MySQL client, import `backend/database/schema.sql`. The script creates and selects `spendwise`, then rebuilds its tables and adds sample data.
-3. Copy `backend/config/config.example.php` to `backend/config/config.php` and set the local DSN, username, and password for your MySQL installation. For a non-default port or database, update the DSN. `config.php` is ignored by Git.
-4. Make sure the PHP CLI has the PDO MySQL driver enabled. In PowerShell from the repository root, run:
-
-   ```powershell
-   php -m | Select-String 'PDO|pdo_mysql'
-   php backend/tests/dao_crud_test.php
-   ```
-
-The CRUD demonstration inserts a temporary user and related rows, checks create/read/update/delete and missing-record behavior for every DAO, then rolls back its transaction. Run it against a disposable `spendwise` database: sample database data is not altered, but test runs need permission to insert rows and start transactions. The script prints `PASS` only after the database operations have executed successfully. PHP syntax checks can be run with `php -l` on each PHP file, but they do not prove that MySQL operations work.
-
-### Submission
-
-Commit milestone changes on the `milestone-2` branch and push that branch, then open a pull request from `milestone-2` into the intended base branch (`main` if that is the course submission target). Review the base branch and diff on GitHub before creating the PR; no merge is part of this work.
+The original SPA still loads its local `frontend/assets/data/sampledata.json`; its existing demo forms do not persist to the API. Authentication, ownership authorization, and frontend/database persistence are Milestone 4 or later work.

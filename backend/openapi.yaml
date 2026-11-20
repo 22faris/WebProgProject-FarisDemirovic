@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: SpendWise API
+  description: REST API for the SpendWise database entities and currency conversion.
+  version: 1.0.0
+servers:
+  - url: ./public
+    description: Local XAMPP backend
+tags:
+  - name: Users
+  - name: User settings
+  - name: Categories
+  - name: Transactions
+  - name: Budgets
+  - name: Currency
+paths:
+  /api/users:
+    get:
+      tags: [Users]
+      summary: List users
+      responses:
+        '200': {$ref: '#/components/responses/List'}
+        default: {$ref: '#/components/responses/InternalServerError'}
+    post:
+      tags: [Users]
+      summary: Create a user (password is hashed and never returned)
+      requestBody: {$ref: '#/components/requestBodies/User'}
+      responses:
+        '201': {$ref: '#/components/responses/Created'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        default: {$ref: '#/components/responses/InternalServerError'}
+  /api/users/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      tags: [Users]
+      summary: Get one user
+      responses:
+        '200': {$ref: '#/components/responses/Item'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/InternalServerError'}
+    put:
+      tags: [Users]
+      summary: Update user fields
+      requestBody: {$ref: '#/components/requestBodies/UserUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/Item'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/InternalServerError'}
+    patch:
+      tags: [Users]
+      summary: Partially update user fields
+      requestBody: {$ref: '#/components/requestBodies/UserUpdate'}
+      responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}
+    delete:
+      tags: [Users]
+      summary: Delete a user and cascading data
+      responses:
+        '200': {$ref: '#/components/responses/Deleted'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        default: {$ref: '#/components/responses/InternalServerError'}
+  /api/user-settings:
+    get:
+      tags: [User settings]
+      summary: List user settings
+      responses: {'200': {$ref: '#/components/responses/List'}, default: {$ref: '#/components/responses/InternalServerError'}}
+    post:
+      tags: [User settings]
+      summary: Create user settings
+      requestBody: {$ref: '#/components/requestBodies/Settings'}
+      responses: {'201': {$ref: '#/components/responses/Created'}, '400': {$ref: '#/components/responses/BadRequest'}, default: {$ref: '#/components/responses/InternalServerError'}}
+  /api/user-settings/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      tags: [User settings]
+      summary: Get settings by user ID
+      responses: {'200': {$ref: '#/components/responses/Item'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}
+    put:
+      tags: [User settings]
+      summary: Update settings by user ID
+      requestBody: {$ref: '#/components/requestBodies/SettingsUpdate'}
+      responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}
+    patch:
+      tags: [User settings]
+      summary: Partially update settings by user ID
+      requestBody: {$ref: '#/components/requestBodies/SettingsUpdate'}
+      responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}
+    delete:
+      tags: [User settings]
+      summary: Delete settings by user ID
+      responses: {'200': {$ref: '#/components/responses/Deleted'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}
+  /api/categories:
+    get: {tags: [Categories], summary: List categories, responses: {'200': {$ref: '#/components/responses/List'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    post: {tags: [Categories], summary: Create category, requestBody: {$ref: '#/components/requestBodies/Category'}, responses: {'201': {$ref: '#/components/responses/Created'}, '400': {$ref: '#/components/responses/BadRequest'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/categories/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get: {tags: [Categories], summary: Get category, responses: {'200': {$ref: '#/components/responses/Item'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    put: {tags: [Categories], summary: Update category, requestBody: {$ref: '#/components/requestBodies/CategoryUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    patch: {tags: [Categories], summary: Partially update category, requestBody: {$ref: '#/components/requestBodies/CategoryUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    delete: {tags: [Categories], summary: Delete category, responses: {'200': {$ref: '#/components/responses/Deleted'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/transactions:
+    get: {tags: [Transactions], summary: List transactions, responses: {'200': {$ref: '#/components/responses/List'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    post: {tags: [Transactions], summary: Create transaction, requestBody: {$ref: '#/components/requestBodies/Transaction'}, responses: {'201': {$ref: '#/components/responses/Created'}, '400': {$ref: '#/components/responses/BadRequest'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/transactions/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get: {tags: [Transactions], summary: Get transaction, responses: {'200': {$ref: '#/components/responses/Item'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    put: {tags: [Transactions], summary: Update transaction, requestBody: {$ref: '#/components/requestBodies/TransactionUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    patch: {tags: [Transactions], summary: Partially update transaction, requestBody: {$ref: '#/components/requestBodies/TransactionUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    delete: {tags: [Transactions], summary: Delete transaction, responses: {'200': {$ref: '#/components/responses/Deleted'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/budgets:
+    get: {tags: [Budgets], summary: List budgets, responses: {'200': {$ref: '#/components/responses/List'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    post: {tags: [Budgets], summary: Create budget, requestBody: {$ref: '#/components/requestBodies/Budget'}, responses: {'201': {$ref: '#/components/responses/Created'}, '400': {$ref: '#/components/responses/BadRequest'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/budgets/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get: {tags: [Budgets], summary: Get budget, responses: {'200': {$ref: '#/components/responses/Item'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    put: {tags: [Budgets], summary: Update budget, requestBody: {$ref: '#/components/requestBodies/BudgetUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    patch: {tags: [Budgets], summary: Partially update budget, requestBody: {$ref: '#/components/requestBodies/BudgetUpdate'}, responses: {'200': {$ref: '#/components/responses/Item'}, '400': {$ref: '#/components/responses/BadRequest'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+    delete: {tags: [Budgets], summary: Delete budget, responses: {'200': {$ref: '#/components/responses/Deleted'}, '404': {$ref: '#/components/responses/NotFound'}, default: {$ref: '#/components/responses/InternalServerError'}}}
+  /api/exchange/convert:
+    get:
+      tags: [Currency]
+      summary: Convert an amount using latest Frankfurter reference rates
+      description: Uses Frankfurter v2 GET /v2/rates?base={from}&quotes={to}; the API needs no key.
+      parameters:
+        - {name: from, in: query, required: true, schema: {type: string, pattern: '^[A-Za-z]{3}$'}, example: EUR}
+        - {name: to, in: query, required: true, schema: {type: string, pattern: '^[A-Za-z]{3}$'}, example: BAM}
+        - {name: amount, in: query, required: true, schema: {type: number, exclusiveMinimum: true, minimum: 0}, example: 25}
+      responses:
+        '200': {description: Conversion, content: {application/json: {schema: {$ref: '#/components/schemas/ConversionEnvelope'}, example: {data: {amount: 25, from: EUR, to: BAM, rate: 1.9558, converted_amount: 48.9, date: '2026-11-19'}}}}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '503': {description: Rate provider unavailable, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        default: {$ref: '#/components/responses/InternalServerError'}
+components:
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: integer, minimum: 1}}
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: {type: object, properties: {code: {type: string}, message: {type: string}}, example: {code: invalid_request, message: amount must be positive}}
+    DataList: {type: object, properties: {data: {type: array, items: {oneOf: [{$ref: '#/components/schemas/UserRecord'}, {$ref: '#/components/schemas/SettingsRecord'}, {$ref: '#/components/schemas/CategoryRecord'}, {$ref: '#/components/schemas/TransactionRecord'}, {$ref: '#/components/schemas/BudgetRecord'}]}}}}
+    DataItem: {type: object, properties: {data: {oneOf: [{$ref: '#/components/schemas/UserRecord'}, {$ref: '#/components/schemas/SettingsRecord'}, {$ref: '#/components/schemas/CategoryRecord'}, {$ref: '#/components/schemas/TransactionRecord'}, {$ref: '#/components/schemas/BudgetRecord'}]}}}
+    UserRecord: {type: object, required: [id, full_name, email, created_at], properties: {id: {type: integer}, full_name: {type: string}, email: {type: string, format: email}, created_at: {type: string, format: date-time}}, description: password_hash is never returned}
+    SettingsRecord: {type: object, required: [user_id, preferred_currency, updated_at], properties: {user_id: {type: integer}, preferred_currency: {type: string}, updated_at: {type: string, format: date-time}}}
+    CategoryRecord: {type: object, required: [id, user_id, name, type], properties: {id: {type: integer}, user_id: {type: integer}, name: {type: string}, type: {type: string, enum: [income, expense]}}}
+    TransactionRecord: {type: object, required: [id, user_id, category_id, amount, type, description, transaction_date, created_at], properties: {id: {type: integer}, user_id: {type: integer}, category_id: {type: integer}, amount: {type: string, pattern: '^\d+\.\d{2}$'}, type: {type: string, enum: [income, expense]}, description: {type: string}, transaction_date: {type: string, format: date}, created_at: {type: string, format: date-time}}}
+    BudgetRecord: {type: object, required: [id, user_id, category_id, amount_limit, month, created_at], properties: {id: {type: integer}, user_id: {type: integer}, category_id: {type: integer}, amount_limit: {type: string, pattern: '^\d+\.\d{2}$'}, month: {type: string, format: date}, created_at: {type: string, format: date-time}}}
+    ConversionEnvelope: {type: object, properties: {data: {$ref: '#/components/schemas/CurrencyConversion'}}}
+    CurrencyConversion: {type: object, required: [amount, from, to, rate, converted_amount, date], properties: {amount: {type: number}, from: {type: string}, to: {type: string}, rate: {type: number}, converted_amount: {type: number}, date: {type: string, format: date}}}
+    User: {type: object, required: [full_name, email, password], properties: {full_name: {type: string, maxLength: 100}, email: {type: string, format: email}, password: {type: string, format: password, minLength: 8}}, example: {full_name: Sample User, email: user@example.com, password: a-strong-demo-password}}
+    UserUpdate: {type: object, properties: {full_name: {type: string}, email: {type: string, format: email}, password: {type: string, minLength: 8}}, example: {full_name: Updated Sample User}}
+    Settings: {type: object, required: [user_id, preferred_currency], properties: {user_id: {type: integer, minimum: 1}, preferred_currency: {type: string, pattern: '^[A-Z]{3}$'}}, example: {user_id: 1, preferred_currency: BAM}}
+    SettingsUpdate: {type: object, required: [preferred_currency], properties: {preferred_currency: {type: string, pattern: '^[A-Z]{3}$'}}, example: {preferred_currency: EUR}}
+    Category: {type: object, required: [user_id, name, type], properties: {user_id: {type: integer}, name: {type: string, maxLength: 50}, type: {type: string, enum: [income, expense]}}, example: {user_id: 1, name: Food, type: expense}}
+    CategoryUpdate: {type: object, properties: {user_id: {type: integer}, name: {type: string}, type: {type: string, enum: [income, expense]}}, example: {name: Groceries}}
+    Transaction: {type: object, required: [user_id, category_id, amount, type, description, transaction_date], properties: {user_id: {type: integer}, category_id: {type: integer}, amount: {type: number, exclusiveMinimum: true, minimum: 0}, type: {type: string, enum: [income, expense]}, description: {type: string, maxLength: 255}, transaction_date: {type: string, format: date}}, example: {user_id: 1, category_id: 1, amount: 12.5, type: expense, description: Groceries, transaction_date: '2026-11-19'}}
+    TransactionUpdate: {type: object, properties: {user_id: {type: integer}, category_id: {type: integer}, amount: {type: number}, type: {type: string, enum: [income, expense]}, description: {type: string}, transaction_date: {type: string, format: date}}, example: {amount: 14.25}}
+    Budget: {type: object, required: [user_id, category_id, amount_limit, month], properties: {user_id: {type: integer}, category_id: {type: integer}, amount_limit: {type: number, exclusiveMinimum: true, minimum: 0}, month: {type: string, format: date, description: First day of month}}, example: {user_id: 1, category_id: 1, amount_limit: 400, month: '2026-11-01'}}
+    BudgetUpdate: {type: object, properties: {user_id: {type: integer}, category_id: {type: integer}, amount_limit: {type: number}, month: {type: string, format: date}}, example: {amount_limit: 425}}
+  requestBodies:
+    User: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/User'}}}}
+    UserUpdate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UserUpdate'}}}}
+    Settings: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Settings'}}}}
+    SettingsUpdate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/SettingsUpdate'}}}}
+    Category: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Category'}}}}
+    CategoryUpdate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CategoryUpdate'}}}}
+    Transaction: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Transaction'}}}}
+    TransactionUpdate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/TransactionUpdate'}}}}
+    Budget: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Budget'}}}}
+    BudgetUpdate: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/BudgetUpdate'}}}}
+  responses:
+    List: {description: Collection, content: {application/json: {schema: {$ref: '#/components/schemas/DataList'}, example: {data: []}}}}
+    Item: {description: Resource, content: {application/json: {schema: {$ref: '#/components/schemas/DataItem'}, example: {data: {id: 1}}}}}
+    Created: {description: Created resource, content: {application/json: {schema: {$ref: '#/components/schemas/DataItem'}, example: {data: {id: 9}}}}}
+    Deleted: {description: Deleted, content: {application/json: {example: {message: Record deleted.}}}}
+    BadRequest: {description: Invalid request, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    NotFound: {description: Record not found, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    InternalServerError: {description: Unexpected server error, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
